@@ -4,6 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 
 import authRoutes from "./routes/auth.routes";
+import appRoutes from "./routes/app.routes";
 import { errorHandler } from "./middleware/error.middleware";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
 app.use("/api/auth", authRoutes);
+app.use("/api/apps", appRoutes);
 
 /** Health-check endpoint */
 app.get("/health", (_req: Request, res: Response) => {
