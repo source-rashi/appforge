@@ -173,10 +173,10 @@ export interface ApiConfig {
 // ─── Notifications ────────────────────────────────────────────────────────────
 
 export interface NotificationEvent {
-  trigger: "on_create" | "on_update" | "on_delete" | "custom";
+  trigger: string;
   table?: string;
-  channel: "email" | "in_app";
-  template: string;
+  channels: Array<"email" | "in_app">;
+  template: { subject: string; body: string };
   recipients: "creator" | "all" | string[];
 }
 

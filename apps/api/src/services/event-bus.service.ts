@@ -6,6 +6,7 @@ export type EventBusPayloads = {
   'row:deleted': { tableName: string; id: string; userId?: string };
   'import:completed': { tableName: string; jobId: string; rowsImported: number };
   'import:failed': { tableName: string; jobId: string; error: string };
+  'notification:new': { userId: string; notification: import('@prisma/client').Notification };
 };
 
 export class EventBusService extends EventEmitter {

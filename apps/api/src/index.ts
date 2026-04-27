@@ -6,6 +6,7 @@ import helmet from "helmet";
 import authRoutes from "./routes/auth.routes";
 import appRoutes from "./routes/app.routes";
 import importRoutes from "./routes/import.routes";
+import notificationRoutes from "./routes/notification.routes";
 import { errorHandler } from "./middleware/error.middleware";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -28,6 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/apps", appRoutes);
 app.use("/api/apps", importRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 /** Health-check endpoint */
 app.get("/health", (_req: Request, res: Response) => {

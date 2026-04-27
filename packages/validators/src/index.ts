@@ -144,15 +144,18 @@ const apiConfigSchema = z.object({
 // ─── Notifications ────────────────────────────────────────────────────────────
 
 const notificationEventSchema = z.object({
-  trigger: z.enum(["on_create", "on_update", "on_delete", "custom"]),
+  trigger: z.string(),
   table: z.string().optional(),
-  channel: z.enum(["email", "in_app"]),
-  template: z.string(),
+  channels: z.array(z.enum(["email", "in_app"])).default(["in_app"]),
+  template: z.object({
+    subject: z.string(),
+    body: z.string()
+  }),
   recipients: z.union([
     z.literal("creator"),
     z.literal("all"),
     z.array(z.string())
-  ]),
+  ])
 }).strip();
 
 const notificationConfigSchema = z.object({
