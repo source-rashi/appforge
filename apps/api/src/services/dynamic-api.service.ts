@@ -21,13 +21,11 @@ export class DynamicApiEngine {
     // Replace old router for this appId if it exists
     const existingRouter = this.appRouters.get(appId);
     if (existingRouter) {
-      // In Express, we can't easily "unmount" a router cleanly without re-ordering,
-      // but we can clear its stack.
       existingRouter.stack.length = 0;
     } else {
       const newRouter = Router();
       this.appRouters.set(appId, newRouter);
-      app.use(`/api/apps/${appId}`, newRouter);
+      app.use(`/${appId}`, newRouter);
     }
 
     const router = this.appRouters.get(appId)!;

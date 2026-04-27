@@ -4,7 +4,8 @@ import type { AppConfig } from '@appforge/config-types';
 import { DynamicSchemaManager } from '../services/dynamic-schema.service';
 import { DynamicApiEngine } from '../services/dynamic-api.service';
 import { AppError } from '../utils/errors';
-import app from '../index'; // import the express app to mount routes. Note: to avoid circular deps, we pass `app` instance differently or require it lazily. Wait, importing `app` here causes a circular dependency. We can initialize engine in index.js and pass `app` to router, or we can instantiate them here and use `req.app`.
+import { dynamicRouter } from '../index'; // import the dynamicRouter from index
+// import app from '../index'; // removed app import to avoid confusion
 
 const router = Router();
 
@@ -36,8 +37,7 @@ router.post('/', asyncHandler(async (req, res) => {
   const syncResult = await schemaManager.syncTables(config.database, appId);
 
   // 3. Mount routes
-  // We use req.app which is the main Express application instance
-  dynamicApiEngine.mountRoutes(req.app as any, config.api, appId);
+  dynamicApiEngine.mountRoutes(dynamicRouter as any, config.api, appId);
 
   // 4. Store config
   configsMap.set(appId, config);
@@ -78,7 +78,7 @@ router.put('/:appId/config', asyncHandler(async (req, res) => {
   }
 
   const syncResult = await schemaManager.syncTables(config.database, appId);
-  dynamicApiEngine.mountRoutes(req.app as any, config.api, appId);
+  dynamicApiEngine.mountRoutes(dynamicRouter as any, config.api, appId);
   configsMap.set(appId, config);
 
   res.status(200).json({

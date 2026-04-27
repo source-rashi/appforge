@@ -26,9 +26,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
+export const dynamicRouter = express.Router();
 app.use("/api/auth", authRoutes);
 app.use("/api/apps", appRoutes);
 app.use("/api/apps", importRoutes);
+app.use("/api/apps", dynamicRouter);
 app.use("/api/notifications", notificationRoutes);
 
 /** Health-check endpoint */
@@ -61,9 +63,11 @@ app.use(errorHandler);
 
 // ─── Start ────────────────────────────────────────────────────────────────────
 
-app.listen(PORT, () => {
-  console.log(`\n  🔧 AppForge API running at http://localhost:${PORT}`);
-  console.log(`  📋 Health check:          http://localhost:${PORT}/health\n`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`\n  🔧 AppForge API running at http://localhost:${PORT}`);
+    console.log(`  📋 Health check:          http://localhost:${PORT}/health\n`);
+  });
+}
 
 export default app;

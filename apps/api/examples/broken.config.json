@@ -1,0 +1,31 @@
+{
+  "id": "broken-config-v1",
+  "name": "Broken Task Manager",
+  "auth": { "enabled": true, "provider": "email" },
+  "invalid_top_level_key": "this should be ignored or cause a warning",
+  "database": {
+    "tables": [
+      {
+        "name": "tasks",
+        "timestamps": true,
+        "fields": [
+          { "type": "string", "required": true }, 
+          { "name": "description", "type": "string", "required": false },
+          { "name": "score", "type": "rating_stars", "required": false }
+        ]
+      }
+    ]
+  },
+  "pages": [
+    { 
+      "id": "tasks-list", 
+      "path": "/tasks", 
+      "title": "Tasks", 
+      "auth": true, 
+      "components": [
+        { "type": "table", "table": "tasks" },
+        { "type": "kanban_board", "table": "tasks" }
+      ]
+    }
+  ]
+}

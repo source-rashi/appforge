@@ -1,0 +1,66 @@
+{
+  "id": "task-manager-v1",
+  "name": "Task Manager",
+  "version": "1.0.0",
+  "auth": { "enabled": true, "provider": "email" },
+  "i18n": { "defaultLocale": "en", "locales": ["en", "es"] },
+  "database": {
+    "tables": [
+      {
+        "name": "tasks",
+        "timestamps": true,
+        "fields": [
+          { "name": "title", "type": "string", "required": true, "validation": [{ "type": "minLength", "value": 3, "message": "Title must be at least 3 characters" }] },
+          { "name": "description", "type": "string", "required": false },
+          { "name": "status", "type": "enum", "options": ["todo", "in_progress", "done"], "defaultValue": "todo" },
+          { "name": "priority", "type": "enum", "options": ["low", "medium", "high"], "defaultValue": "medium" },
+          { "name": "due_date", "type": "date", "required": false }
+        ]
+      },
+      {
+        "name": "comments",
+        "timestamps": true,
+        "fields": [
+          { "name": "body", "type": "string", "required": true },
+          { "name": "task_id", "type": "relation", "relatedTable": "tasks", "required": true }
+        ]
+      }
+    ]
+  },
+  "pages": [
+    { "id": "tasks-list", "path": "/tasks", "title": "Tasks", "auth": true, "components": [
+      { "type": "table", "table": "tasks", "searchable": true, "sortable": true, "paginated": true, "pageSize": 20 }
+    ]},
+    { "id": "new-task", "path": "/tasks/new", "title": "New Task", "auth": true, "components": [
+      { "type": "form", "table": "tasks", "submitLabel": "Create Task", "onSuccess": "redirect", "redirectTo": "/tasks" }
+    ]},
+    { "id": "dashboard", "path": "/dashboard", "title": "Dashboard", "auth": true, "components": [
+      { "type": "dashboard", "widgets": [
+        { "type": "count", "table": "tasks", "label": "Total Tasks" },
+        { "type": "count", "table": "tasks", "label": "Done", "filter": { "status": "done" } },
+        { "type": "chart_bar", "table": "tasks", "field": "status", "label": "Tasks by Status" }
+      ]}
+    ]},
+    { "id": "import", "path": "/import", "title": "Import Tasks", "auth": true, "components": [
+      { "type": "csv_import", "table": "tasks" }
+    ]}
+  ],
+  "api": [
+    { "path": "/tasks", "method": "GET", "table": "tasks", "action": "list", "auth": true },
+    { "path": "/tasks", "method": "POST", "table": "tasks", "action": "create", "auth": true },
+    { "path": "/tasks/:id", "method": "GET", "table": "tasks", "action": "read", "auth": true },
+    { "path": "/tasks/:id", "method": "PUT", "table": "tasks", "action": "update", "auth": true },
+    { "path": "/tasks/:id", "method": "DELETE", "table": "tasks", "action": "delete", "auth": true }
+  ],
+  "notifications": {
+    "events": [
+      { 
+        "trigger": "on_create", 
+        "table": "tasks", 
+        "channels": ["in_app"], 
+        "template": { "subject": "New Task", "body": "New task created: {{title}}" }, 
+        "recipients": "creator" 
+      }
+    ]
+  }
+}
