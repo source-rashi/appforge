@@ -11,7 +11,7 @@ interface AppConfigContextValue {
   error: Error | null;
 }
 
-const AppConfigContext = createContext<AppConfigContextValue | undefined>(undefined);
+export const AppConfigContext = createContext<AppConfigContextValue | undefined>(undefined);
 
 export function AppConfigProvider({ children, appId }: { children: React.ReactNode; appId: string }) {
   const [config, setConfig] = useState<AppConfig | null>(null);

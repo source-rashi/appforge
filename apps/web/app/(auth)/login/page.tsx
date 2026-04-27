@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiPost } from '../../lib/api-client';
 import toast from 'react-hot-toast';
+import { useI18n } from '../../lib/i18n-context';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -12,6 +13,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+  const { t } = useI18n();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +37,7 @@ export default function Login() {
       <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full border border-gray-100">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-indigo-600">AppForge</h1>
-          <p className="text-gray-500 mt-2">Sign in to your account</p>
+          <p className="text-gray-500 mt-2">{t('login')}</p>
         </div>
 
         {error && (
@@ -75,15 +77,14 @@ export default function Login() {
             {loading ? (
               <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
             ) : (
-              'Sign In'
+              t('login')
             )}
           </button>
         </form>
 
         <div className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
           <Link href="/register" className="text-indigo-600 hover:text-indigo-800 font-medium">
-            Register here
+            {t('register')}
           </Link>
         </div>
       </div>

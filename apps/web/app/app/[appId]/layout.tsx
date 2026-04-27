@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { AppConfigProvider, useAppConfig } from '../../lib/config-context';
 import { apiGet } from '../../lib/api-client';
 import toast from 'react-hot-toast';
+import { useI18n } from '../../lib/i18n-context';
+import { LocaleSwitcher } from '../../components/LocaleSwitcher';
 
 function AppShell({ children, appId }: { children: React.ReactNode; appId: string }) {
   const router = useRouter();
@@ -15,6 +17,7 @@ function AppShell({ children, appId }: { children: React.ReactNode; appId: strin
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -46,7 +49,7 @@ function AppShell({ children, appId }: { children: React.ReactNode; appId: strin
         if (data.type === 'ping') return;
         
         setUnreadCount(prev => prev + 1);
-        toast.success(`New Notification: ${data.subject}`);
+        toast.success(`${t('notifications')}: ${data.subject}`);
       } catch (e) {
         // Parse error or non-JSON data
       }
@@ -110,7 +113,7 @@ function AppShell({ children, appId }: { children: React.ReactNode; appId: strin
               className="block px-4 py-2 rounded hover:bg-indigo-700 transition truncate"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              {page.title}
+              {t(page.title)}
             </Link>
           ))}
         </nav>
@@ -124,7 +127,7 @@ function AppShell({ children, appId }: { children: React.ReactNode; appId: strin
               href={`/app/${appId}${page.path}`}
               className="flex flex-col items-center p-2 text-gray-600 hover:text-indigo-600 truncate w-1/4 text-xs"
             >
-              <span>{page.title}</span>
+              <span>{t(page.title)}</span>
             </Link>
           ))}
       </div>
@@ -133,9 +136,11 @@ function AppShell({ children, appId }: { children: React.ReactNode; appId: strin
       <div className="flex-1 flex flex-col min-h-screen pb-16 md:pb-0 overflow-hidden">
         {/* Topbar */}
         <header className="bg-white border-b border-gray-200 p-4 flex justify-between items-center z-10 hidden md:flex">
-          <h2 className="text-xl font-semibold text-gray-800 truncate">Dashboard</h2>
+          <h2 className="text-xl font-semibold text-gray-800 truncate">{t('dashboard')}</h2>
           
           <div className="flex items-center space-x-4">
+            <LocaleSwitcher />
+            
             <div className="relative">
               <button onClick={toggleNotifications} className="relative p-2 text-gray-500 hover:text-gray-700">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,9 +155,9 @@ function AppShell({ children, appId }: { children: React.ReactNode; appId: strin
               
               {showNotifications && (
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 border border-gray-200 z-50">
-                  <div className="px-4 py-2 border-b font-medium text-sm text-gray-700">Notifications</div>
+                  <div className="px-4 py-2 border-b font-medium text-sm text-gray-700">{t('notifications')}</div>
                   {notifications.length === 0 ? (
-                    <div className="px-4 py-3 text-sm text-gray-500 text-center">No new notifications</div>
+                    <div className="px-4 py-3 text-sm text-gray-500 text-center">{t('no_data')}</div>
                   ) : (
                     notifications.map(notif => (
                       <div key={notif.id} className="px-4 py-3 border-b hover:bg-gray-50">
@@ -171,7 +176,7 @@ function AppShell({ children, appId }: { children: React.ReactNode; appId: strin
               onClick={handleLogout}
               className="text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-4 rounded transition"
             >
-              Logout
+              {t('logout')}
             </button>
           </div>
         </header>
@@ -186,7 +191,7 @@ function AppShell({ children, appId }: { children: React.ReactNode; appId: strin
                   <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-red-600 ring-2 ring-white"></span>
                 )}
               </button>
-              <button onClick={handleLogout} className="text-xs text-red-600 px-2">Logout</button>
+              <button onClick={handleLogout} className="text-xs text-red-600 px-2">{t('logout')}</button>
         </div>
 
         {/* Page Content */}
@@ -200,13 +205,17 @@ function AppShell({ children, appId }: { children: React.ReactNode; appId: strin
 
 import { use } from 'react';
 
+import { I18nProvider } from '../../lib/i18n-context';
+
 export default function Layout({ children, params }: { children: React.ReactNode; params: Promise<{ appId: string }> }) {
   const { appId } = use(params);
   return (
     <AppConfigProvider appId={appId}>
-      <AppShell appId={appId}>
-        {children}
-      </AppShell>
+      <I18nProvider>
+        <AppShell appId={appId}>
+          {children}
+        </AppShell>
+      </I18nProvider>
     </AppConfigProvider>
   );
 }

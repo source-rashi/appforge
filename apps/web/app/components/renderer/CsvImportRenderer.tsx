@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { useTable } from '../../lib/config-context';
 import { apiClient, apiGet } from '../../lib/api-client';
 import type { CsvImportComponentConfig } from '@appforge/config-types';
+import { useI18n } from '../../lib/i18n-context';
 
 export function CsvImportRenderer({ config, appId }: { config: CsvImportComponentConfig; appId: string }) {
   const tableConfig = useTable(config.table);
@@ -14,6 +15,7 @@ export function CsvImportRenderer({ config, appId }: { config: CsvImportComponen
   const [mapping, setMapping] = useState<Record<string, string>>({});
   const [jobId, setJobId] = useState<string | null>(null);
   const [jobStatus, setJobStatus] = useState<any>(null);
+  const { t } = useI18n();
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -98,7 +100,7 @@ export function CsvImportRenderer({ config, appId }: { config: CsvImportComponen
           onDrop={handleDrop}
           className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:bg-gray-50 transition-colors"
         >
-          <p className="text-gray-500 mb-2">Drag and drop a CSV file here, or click to select</p>
+          <p className="text-gray-500 mb-2">{t('drag_drop')}</p>
           <input 
             type="file" 
             accept=".csv" 
@@ -147,7 +149,7 @@ export function CsvImportRenderer({ config, appId }: { config: CsvImportComponen
             onClick={handleUpload}
             className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium"
           >
-            Start Import
+            {t('import_csv')}
           </button>
         </div>
       )}

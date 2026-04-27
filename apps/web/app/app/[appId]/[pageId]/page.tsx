@@ -2,6 +2,7 @@
 
 import { usePage, useAppConfig } from '../../../lib/config-context';
 import { ComponentRenderer } from '../../../components/renderer/ComponentRenderer';
+import { useI18n } from '../../../lib/i18n-context';
 
 import { use } from 'react';
 
@@ -9,6 +10,7 @@ export default function DynamicPage({ params }: { params: Promise<{ appId: strin
   const { appId, pageId } = use(params);
   const { loading, error } = useAppConfig();
   const pageConfig = usePage(pageId);
+  const { t } = useI18n();
 
   if (loading) {
     return (
@@ -39,7 +41,7 @@ export default function DynamicPage({ params }: { params: Promise<{ appId: strin
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
-      <h1 className="text-3xl font-bold text-gray-900 border-b pb-4">{pageConfig.title}</h1>
+      <h1 className="text-3xl font-bold text-gray-900 border-b pb-4">{t(pageConfig.title)}</h1>
       
       <div className="grid gap-8">
         {pageConfig.components.map((component, idx) => (

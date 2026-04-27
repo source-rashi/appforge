@@ -8,9 +8,11 @@ import toast from 'react-hot-toast';
 import { useTable } from '../../lib/config-context';
 import { apiPost } from '../../lib/api-client';
 import type { FormComponentConfig, FieldConfig } from '@appforge/config-types';
+import { useI18n } from '../../lib/i18n-context';
 
 export function FormRenderer({ config, appId }: { config: FormComponentConfig; appId: string }) {
   const tableConfig = useTable(config.table);
+  const { t } = useI18n();
 
   const fieldsToRender = useMemo(() => {
     if (!tableConfig) return [];
@@ -131,7 +133,7 @@ export function FormRenderer({ config, appId }: { config: FormComponentConfig; a
         disabled={isSubmitting}
         className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
       >
-        {isSubmitting ? 'Submitting...' : config.submitLabel || 'Submit'}
+        {isSubmitting ? t('loading') : t(config.submitLabel || 'submit')}
       </button>
     </form>
   );

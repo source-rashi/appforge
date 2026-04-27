@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTable } from '../../lib/config-context';
 import { apiGet } from '../../lib/api-client';
 import type { TableComponentConfig } from '@appforge/config-types';
+import { useI18n } from '../../lib/i18n-context';
 
 export function TableRenderer({ config, appId }: { config: TableComponentConfig; appId: string }) {
   const tableConfig = useTable(config.table);
@@ -12,6 +13,7 @@ export function TableRenderer({ config, appId }: { config: TableComponentConfig;
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<string | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const { t } = useI18n();
 
   const pageSize = config.pageSize || 20;
 
@@ -50,7 +52,7 @@ export function TableRenderer({ config, appId }: { config: TableComponentConfig;
         <div className="p-4 border-b border-gray-200">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder={t('search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full max-w-sm border border-gray-300 rounded-md p-2"
@@ -91,14 +93,14 @@ export function TableRenderer({ config, appId }: { config: TableComponentConfig;
             ) : isError ? (
               <tr>
                 <td colSpan={columns.length} className="px-6 py-8 text-center text-red-500">
-                  <p>Error loading data: {(error as any)?.message}</p>
+                  <p>{t('error')}: {(error as any)?.message}</p>
                   <button onClick={() => refetch()} className="mt-2 text-blue-600 hover:underline">Retry</button>
                 </td>
               </tr>
             ) : data?.data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className="px-6 py-12 text-center text-gray-500">
-                  No data found.
+                  {t('no_data')}
                 </td>
               </tr>
             ) : (
