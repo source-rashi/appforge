@@ -1,0 +1,57 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model AppSession {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model GeneratedTable {
+  id         String   @id @default(uuid())
+  configId   String
+  tableName  String   @unique
+  schemaJson String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model ImportJob {
+  id            String   @id @default(uuid())
+  tableName     String
+  fileName      String
+  status        String   @default("pending")
+  totalRows     Int      @default(0)
+  processedRows Int      @default(0)
+  errors        String   @default("[]")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Notification {
+  id        String    @id @default(uuid())
+  userId    String?
+  type      String
+  channel   String
+  subject   String
+  body      String
+  read      Boolean   @default(false)
+  sentAt    DateTime?
+  createdAt DateTime  @default(now())
+}
