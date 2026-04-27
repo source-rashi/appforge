@@ -3,6 +3,9 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 
+import authRoutes from "./routes/auth.routes";
+import { errorHandler } from "./middleware/error.middleware";
+
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const PORT = parseInt(process.env.PORT ?? "4000", 10);
@@ -19,6 +22,8 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
+
+app.use("/api/auth", authRoutes);
 
 /** Health-check endpoint */
 app.get("/health", (_req: Request, res: Response) => {
@@ -41,18 +46,12 @@ app.get("/", (_req: Request, res: Response) => {
 // ─── 404 catch-all ────────────────────────────────────────────────────────────
 
 app.use((_req: Request, res: Response) => {
-  res.status(404).json({ error: "Not Found" });
+  res.status(404).json({ error: "NOT_FOUND", message: "Route not found" });
 });
 
 // ─── Global error handler ─────────────────────────────────────────────────────
 
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  console.error("[AppForge API] Unhandled error:", err);
-  res.status(500).json({
-    error: "Internal Server Error",
-    ...(process.env.NODE_ENV !== "production" && { message: err.message }),
-  });
-});
+app.use(errorHandler);
 
 // ─── Start ────────────────────────────────────────────────────────────────────
 
