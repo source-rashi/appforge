@@ -200,6 +200,40 @@ docker compose down -v     # stop + delete volume (reset data)
 | `@appforge/config-types`   | `packages/config-types`    | Shared TypeScript types            |
 | `@appforge/validators`     | `packages/validators`      | Zod-based config validation        |
 
+## 🚀 Deployment
+
+AppForge can be deployed seamlessly to [Railway](https://railway.app/).
+
+### Prerequisites
+- A Railway account
+- Railway CLI (`npm install -g @railway/cli`)
+
+### Step-by-step
+
+1. **Login to Railway**
+   ```bash
+   railway login
+   ```
+
+2. **Initialize Railway Project** (Run once)
+   ```bash
+   railway init
+   ```
+   *Follow the prompts to create a new project.*
+
+3. **Add PostgreSQL Plugin**
+   In the Railway Dashboard for your project, click **New** -> **Database** -> **Add PostgreSQL**. Railway will automatically inject the `DATABASE_URL` into your services.
+
+4. **Set Environment Variables**
+   Set the required variables in the Railway Dashboard before deploying.
+   See [docs/deployment.md](docs/deployment.md) for a full reference of all required and optional environment variables.
+
+5. **Deploy!**
+   Run the deployment script from the root directory:
+   ```bash
+   ./deploy.sh
+   ```
+
 ---
 
 ## 📝 License

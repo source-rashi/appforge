@@ -9,10 +9,13 @@ import importRoutes from "./routes/import.routes";
 import notificationRoutes from "./routes/notification.routes";
 import { errorHandler } from "./middleware/error.middleware";
 
+import morgan from "morgan";
+
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const PORT = parseInt(process.env.PORT ?? "4000", 10);
-const CORS_ORIGIN = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+// Railway sets FRONTEND_URL, default to localhost
+const CORS_ORIGIN = process.env.FRONTEND_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
 // ─── App bootstrap ────────────────────────────────────────────────────────────
 
@@ -20,9 +23,16 @@ const app = express();
 
 // Middleware
 app.use(helmet());
-app.use(cors({ origin: CORS_ORIGIN, credentials: true }));
+app.use(cors({ origin: [CORS_ORIGIN, "http://localhost:3000"], credentials: true }));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// Request logging
+if (process.env.NODE_ENV === "production") {
+  app.use(morgan("combined"));
+} else {
+  app.use(morgan("dev"));
+}
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
@@ -64,10 +74,25 @@ app.use(errorHandler);
 // ─── Start ────────────────────────────────────────────────────────────────────
 
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`\n  🔧 AppForge API running at http://localhost:${PORT}`);
     console.log(`  📋 Health check:          http://localhost:${PORT}/health\n`);
   });
+
+  // Graceful shutdown
+  const shutdown = () => {
+    console.log('SIGTERM or SIGINT received. Shutting down gracefully...');
+    server.close(async () => {
+      console.log('HTTP server closed.');
+      const { prisma } = await import('./db/prisma');
+      await prisma.$disconnect();
+      console.log('Database connection closed.');
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 }
 
 export default app;
