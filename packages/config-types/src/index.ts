@@ -2,7 +2,7 @@
  * @appforge/config-types
  *
  * Shared TypeScript types for AppForge JSON configuration files.
- * These types are consumed by both the API and the web frontend.
+ * These types define the structure for generating applications.
  */
 
 // ─── Primitive helpers ────────────────────────────────────────────────────────
@@ -10,75 +10,198 @@
 export type ISODateString = string; // "2024-01-15T12:00:00Z"
 export type SemVer = string;        // "1.0.0"
 
-// ─── Feature flag ────────────────────────────────────────────────────────────
+// ─── Validation ───────────────────────────────────────────────────────────────
 
-export interface FeatureFlag {
-  /** Unique identifier for this flag */
+/**
+ * Rules for validating a field's value.
+ */
+export interface ValidationRule {
+  type: "min" | "max" | "minLength" | "maxLength" | "pattern" | "custom";
+  value: unknown;
+  message: string;
+}
+
+// ─── Fields ───────────────────────────────────────────────────────────────────
+
+/**
+ * Configuration for a data field.
+ */
+export interface FieldConfig {
+  /** The name of the field */
   name: string;
-  /** Whether the flag is enabled */
-  enabled: boolean;
-  /** Optional description shown in the UI */
-  description?: string;
+  /** The data type of the field */
+  type: "string" | "number" | "boolean" | "date" | "email" | "enum" | "relation";
+  /** Whether the field must be provided */
+  required?: boolean;
+  /** The default value for the field */
+  defaultValue?: unknown;
+  /** Allowed options if type is "enum" */
+  options?: string[];
+  /** The related table if type is "relation" */
+  relatedTable?: string;
+  /** Validation rules for the field */
+  validation?: ValidationRule[];
 }
 
-// ─── Database config ─────────────────────────────────────────────────────────
+// ─── Database ─────────────────────────────────────────────────────────────────
 
-export type DatabaseDriver = "postgres" | "mysql" | "sqlite" | "mongodb";
+/**
+ * Configuration for a database table.
+ */
+export interface TableConfig {
+  /** Snake_case name of the table */
+  name: string;
+  /** Fields defining the table's schema */
+  fields: FieldConfig[];
+  /** Whether to automatically add createdAt and updatedAt columns */
+  timestamps?: boolean;
+}
 
+/**
+ * Configuration for the database schema.
+ */
 export interface DatabaseConfig {
-  driver: DatabaseDriver;
-  /** Connection string (use env-var reference: "$DATABASE_URL") */
-  url: string;
-  /** Max connections in the pool (default: 10) */
-  poolSize?: number;
-  ssl?: boolean;
+  tables: TableConfig[];
 }
 
-// ─── Auth config ─────────────────────────────────────────────────────────────
+// ─── Auth ─────────────────────────────────────────────────────────────────────
 
-export type AuthStrategy = "jwt" | "session" | "oauth2";
-
+/**
+ * Configuration for user authentication.
+ */
 export interface AuthConfig {
-  strategy: AuthStrategy;
-  /** Token expiry, e.g. "7d", "1h" */
-  tokenExpiry?: string;
-  providers?: Array<"google" | "github" | "discord">;
+  /** Whether authentication is enabled */
+  enabled: boolean;
+  /** The authentication provider */
+  provider: "email" | "oauth_google";
+  /** Custom login/signup fields */
+  fields?: FieldConfig[];
 }
 
-// ─── API config ───────────────────────────────────────────────────────────────
+// ─── Components & Pages ───────────────────────────────────────────────────────
 
+export interface WidgetConfig {
+  type: "count" | "chart_bar" | "chart_line" | "stat";
+  table: string;
+  field?: string;
+  label: string;
+  filter?: Record<string, unknown>;
+}
+
+export interface FormComponentConfig {
+  type: "form";
+  table: string;
+  fields?: string[];
+  submitLabel?: string;
+  onSuccess?: "redirect" | "reset";
+  redirectTo?: string;
+}
+
+export interface TableComponentConfig {
+  type: "table";
+  table: string;
+  columns?: string[];
+  searchable?: boolean;
+  sortable?: boolean;
+  paginated?: boolean;
+  pageSize?: number;
+}
+
+export interface DashboardComponentConfig {
+  type: "dashboard";
+  widgets: WidgetConfig[];
+}
+
+export interface CsvImportComponentConfig {
+  type: "csv_import";
+  table: string;
+  fieldMapping?: Record<string, string>;
+}
+
+export interface UnknownComponentConfig {
+  type: "unknown";
+  raw: unknown;
+}
+
+/**
+ * Configuration for UI components.
+ * This is a discriminated union of available component types.
+ */
+export type ComponentConfig =
+  | FormComponentConfig
+  | TableComponentConfig
+  | DashboardComponentConfig
+  | CsvImportComponentConfig
+  | UnknownComponentConfig;
+
+/**
+ * Configuration for a UI page.
+ */
+export interface PageConfig {
+  /** Unique identifier for the page */
+  id: string;
+  /** URL path for the page */
+  path: string;
+  /** Page title */
+  title: string;
+  /** Whether login is required to view the page */
+  auth?: boolean;
+  /** Components rendered on the page */
+  components: ComponentConfig[];
+}
+
+// ─── API ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Configuration for an API endpoint.
+ */
 export interface ApiConfig {
-  /** Port the Express server binds to */
-  port: number;
-  /** CORS allowed origins */
-  corsOrigins: string[];
-  /** Rate limit: max requests per windowMs */
-  rateLimit?: {
-    windowMs: number;
-    max: number;
-  };
+  /** The URL path for the endpoint */
+  path: string;
+  /** The HTTP method for the endpoint */
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  /** The table this endpoint interacts with */
+  table: string;
+  /** The action performed by the endpoint */
+  action: "list" | "create" | "read" | "update" | "delete" | "custom";
+  /** Whether login is required to access the endpoint */
+  auth?: boolean;
+  /** Validation rules for the request body, keyed by field name */
+  validation?: Record<string, ValidationRule[]>;
 }
 
-// ─── UI / Frontend config ────────────────────────────────────────────────────
+// ─── Notifications ────────────────────────────────────────────────────────────
 
-export type ColorScheme = "light" | "dark" | "system";
+export interface NotificationEvent {
+  trigger: "on_create" | "on_update" | "on_delete" | "custom";
+  table?: string;
+  channel: "email" | "in_app";
+  template: string;
+  recipients: "creator" | "all" | string[];
+}
 
-export interface UiConfig {
-  /** App display name shown in browser title / nav */
-  appName: string;
-  /** Primary brand color (hex) */
-  primaryColor?: string;
-  defaultColorScheme?: ColorScheme;
-  logoUrl?: string;
+/**
+ * Configuration for system notifications.
+ */
+export interface NotificationConfig {
+  events: NotificationEvent[];
+}
+
+// ─── I18n ─────────────────────────────────────────────────────────────────────
+
+/**
+ * Configuration for internationalization.
+ */
+export interface I18nConfig {
+  defaultLocale: string;
+  locales: string[];
+  translations?: Record<string, Record<string, string>>;
 }
 
 // ─── Root AppConfig ───────────────────────────────────────────────────────────
 
 /**
  * Root configuration object for an AppForge-generated application.
- *
- * This interface will be extended in future steps with pages, routes,
- * permissions, integrations, and deployment targets.
  */
 export interface AppConfig {
   /** Unique machine-readable identifier for this app */
@@ -87,17 +210,13 @@ export interface AppConfig {
   name: string;
   /** SemVer config schema version */
   version: SemVer;
-  /** Brief description shown in the AppForge dashboard */
-  description?: string;
-  /** ISO timestamp of when this config was last updated */
-  updatedAt?: ISODateString;
-
+  
+  auth?: AuthConfig;
   database: DatabaseConfig;
-  auth: AuthConfig;
-  api: ApiConfig;
-  ui: UiConfig;
-
-  features?: FeatureFlag[];
+  pages: PageConfig[];
+  api: ApiConfig[];
+  notifications?: NotificationConfig;
+  i18n?: I18nConfig;
 }
 
 // ─── Re-export everything as a namespace for convenience ─────────────────────
