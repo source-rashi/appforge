@@ -10,10 +10,15 @@ export const errorHandler = (
   console.error('[AppForge API] Error:', err);
 
   if (err instanceof AppError) {
-    return res.status(err.statusCode).json({
+    const body: Record<string, unknown> = {
       error: err.code,
       message: err.message,
-    });
+    };
+    // Forward field-level validation details if present
+    if ((err as any).fields) {
+      body.fields = (err as any).fields;
+    }
+    return res.status(err.statusCode).json(body);
   }
 
   // Handle unexpected errors, hide internal details in production

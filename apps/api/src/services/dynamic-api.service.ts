@@ -221,7 +221,9 @@ export class DynamicApiEngine {
       }
 
       if (Object.keys(errors).length > 0) {
-        return res.status(400).json({ error: 'VALIDATION_ERROR', fields: errors });
+        const err = new AppError('Validation failed', 400, 'VALIDATION_ERROR');
+        (err as any).fields = errors;
+        throw err;
       }
 
       next();

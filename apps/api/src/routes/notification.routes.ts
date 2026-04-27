@@ -52,7 +52,7 @@ router.get('/stream', (req, res) => {
   res.setHeader('Connection', 'keep-alive');
 
   // Initial connection response
-  res.write(': connected\\n\\n');
+  res.write(': connected\n\n');
 
   // Event listener
   const listener = (payload: { userId: string; notification: import('@prisma/client').Notification }) => {
