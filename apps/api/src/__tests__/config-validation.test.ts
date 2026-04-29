@@ -32,7 +32,8 @@ jest.mock('@prisma/client', () => {
     },
     importJob: {
       create: jest.fn().mockResolvedValue({ id: 'job123' }),
-      findUnique: jest.fn().mockResolvedValue({ id: 'job123', status: 'completed' })
+      findUnique: jest.fn().mockResolvedValue({ id: 'job123', status: 'completed' }),
+      update: jest.fn().mockResolvedValue({ id: 'job123', status: 'completed' })
     }
   };
   return { PrismaClient: jest.fn(() => mockPrisma) };
