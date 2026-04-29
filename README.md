@@ -234,6 +234,21 @@ AppForge can be deployed seamlessly to [Railway](https://railway.app/).
    ./deploy.sh
    ```
 
+## 📝 Track A Submission Details (AI App Generator)
+
+This monorepo fulfills the requirements of **Track A: AI App Generator**. 
+
+### 🌟 Core Capabilities
+- **Dynamic Application Runtime**: Uses `@appforge/validators` to parse JSON configurations and dynamically maps them to API endpoints and UI components.
+- **Graceful Degradation**: If an incomplete or incorrect JSON config is passed (e.g., unknown components or missing required fields), the system validates it, creates a partial valid configuration, and returns warnings rather than crashing. 
+- **Extensible Architecture**: Adding new UI components or database schemas only requires updating the Zod validators and frontend component mapper.
+
+### ✨ Implemented Features (End-to-End)
+1. **Authentication System**: JWT-based login and registration endpoints. API endpoints automatically protect themselves if the config specifies `"auth": true` or similar requirements.
+2. **CSV Import System**: A robust backend service that parses uploaded CSV files, maps them to dynamic tables based on the JSON configuration, and processes them asynchronously with a job tracking status API (`/api/apps/:appId/import/:jobId/status`).
+3. **Dynamic CRUD APIs**: Fully functional endpoints that automatically adapt to the provided JSON schema to read and write from PostgreSQL, supporting pagination.
+4. **Mobile-Ready Frontend**: The Next.js frontend uses Tailwind CSS to ensure the dynamically generated UI is completely responsive.
+
 ---
 
 ## 📝 License
