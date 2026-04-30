@@ -30,8 +30,8 @@ router.get('/', asyncHandler(async (req, res) => {
 }));
 
 router.post('/', asyncHandler(async (req, res) => {
-  const rawConfig = req.body.config;
-  if (!rawConfig) {
+  const rawConfig = req.body.config || req.body;
+  if (!rawConfig || (Object.keys(rawConfig).length === 0)) {
     throw new AppError('Config is required', 400, 'MISSING_CONFIG');
   }
 
@@ -70,9 +70,8 @@ router.get('/:appId/config', asyncHandler(async (req, res) => {
 
 router.put('/:appId/config', asyncHandler(async (req, res) => {
   const appId = req.params.appId;
-  const rawConfig = req.body.config;
-
-  if (!rawConfig) {
+  const rawConfig = req.body.config || req.body;
+  if (!rawConfig || (Object.keys(rawConfig).length === 0)) {
     throw new AppError('Config is required', 400, 'MISSING_CONFIG');
   }
 
