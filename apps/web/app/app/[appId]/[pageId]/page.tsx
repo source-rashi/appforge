@@ -3,6 +3,7 @@
 import { usePage, useAppConfig } from '../../../lib/config-context';
 import { ComponentRenderer } from '../../../components/renderer/ComponentRenderer';
 import { useI18n } from '../../../lib/i18n-context';
+import type { ComponentConfig } from '@appforge/config-types';
 
 import { use } from 'react';
 
@@ -44,7 +45,7 @@ export default function DynamicPage({ params }: { params: Promise<{ appId: strin
       <h1 className="text-3xl font-bold text-gray-900 border-b pb-4">{t(pageConfig.title)}</h1>
       
       <div className="grid gap-8">
-        {pageConfig.components.map((component, idx) => (
+        {pageConfig.components.map((component: ComponentConfig, idx: number) => (
           <div key={idx} className="w-full">
              <ComponentRenderer component={component} appId={appId} />
           </div>

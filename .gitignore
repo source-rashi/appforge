@@ -46,3 +46,6 @@ docker-compose.override.yml
 # ─── Misc ───────────────────────────────────────────────────────────────────
 *.tgz
 .turbo/
+
+.vercel
+.env*.local

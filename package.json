@@ -9,10 +9,11 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev --workspace=apps/api\" \"npm run dev --workspace=apps/web\"",
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build --workspace=@appforge/config-types --workspace=@appforge/validators --workspace=@appforge/api",
     "test": "npm run test --workspace=apps/api",
     "lint": "npm run lint --workspaces --if-present",
     "type-check": "npm run type-check --workspaces --if-present",
+    "start": "npm run start --workspace=apps/api",
     "clean": "rimraf **/node_modules **/.next **/dist **/build"
   },
   "devDependencies": {
