@@ -30,6 +30,9 @@ router.get('/', asyncHandler(async (req, res) => {
 }));
 
 router.post('/', asyncHandler(async (req, res) => {
+  console.log('[DEBUG] POST /api/apps body:', JSON.stringify(req.body));
+  console.log('[DEBUG] POST /api/apps headers:', req.headers['content-type']);
+  
   const rawConfig = req.body.config || req.body;
   if (!rawConfig || (Object.keys(rawConfig).length === 0)) {
     throw new AppError('Config is required', 400, 'MISSING_CONFIG');
@@ -51,9 +54,12 @@ router.post('/', asyncHandler(async (req, res) => {
   configsMap.set(appId, config);
 
   res.status(201).json({
-    appId,
-    warnings,
-    syncResult,
+    data: {
+      id: appId,
+      appId,
+      warnings,
+      syncResult,
+    }
   });
 }));
 
