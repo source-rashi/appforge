@@ -21,6 +21,14 @@ const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => P
     Promise.resolve(fn(req, res, next)).catch(next);
   };
 
+router.get('/', asyncHandler(async (req, res) => {
+  const apps = Array.from(configsMap.values()).map(config => ({
+    id: config.id,
+    name: config.name,
+  }));
+  res.status(200).json({ data: apps });
+}));
+
 router.post('/', asyncHandler(async (req, res) => {
   const rawConfig = req.body.config;
   if (!rawConfig) {

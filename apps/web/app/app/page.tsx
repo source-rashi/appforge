@@ -80,7 +80,7 @@ export default function AppsList() {
             ) : (
               <div className="text-left animate-in fade-in slide-in-from-bottom-4">
                 <textarea 
-                  className="w-full h-64 p-4 border border-gray-300 rounded-lg font-mono text-sm mb-4 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full h-64 p-4 border border-gray-300 rounded-lg font-mono text-sm mb-4 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                   placeholder='{\n  "name": "My App",\n  "database": { ... }\n}'
                   value={configText}
                   onChange={e => setConfigText(e.target.value)}
