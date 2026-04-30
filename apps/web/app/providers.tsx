@@ -14,13 +14,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
     },
   }));
 
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(err => {
-        console.error('Service Worker registration failed:', err);
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if ('serviceWorker' in navigator) {
+  //     navigator.serviceWorker.register('/sw.js').catch(err => {
+  //       console.error('Service Worker registration failed:', err);
+  //     });
+  //   }
+  // }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

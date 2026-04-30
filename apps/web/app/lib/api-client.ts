@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+const DEFAULT_API_URL = 'https://appforge-api-production.up.railway.app/api';
+const envUrl = process.env.NEXT_PUBLIC_API_URL;
+
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api',
+  baseURL: (envUrl && !envUrl.includes('your-railway')) ? envUrl : DEFAULT_API_URL,
 });
 
 apiClient.interceptors.request.use((config) => {
